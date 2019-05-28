@@ -12,9 +12,9 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=['tests']),
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
-    install_requires={
+    install_requires=[
         'pysnooper',
-    },
+    ],
     extras_require={
         'tests': {
             'pytest',
