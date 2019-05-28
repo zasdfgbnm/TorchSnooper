@@ -10,8 +10,8 @@ class TensorFormat:
         self.properties_name = property_name
 
     def __call__(self, tensor):
-        prefix = 'tensor('
-        suffix = ')'
+        prefix = 'tensor<'
+        suffix = '>'
         properties_str = ''
         for p in self.properties:
             new = ''
@@ -49,11 +49,15 @@ class TensorFormat:
 default_format = TensorFormat()
 
 
-class TorchSnooper:
+class TorchSnooper(pysnooper.tracer.Tracer):
 
-    def __init__(self, tensor_format=default_format):
-        if tensor_format is not default_format:
-            raise NotImplementedError('Formatting is not supported yet')
+    def __init__(self, *args, tensor_format=default_format, **kwargs):
+        custom_repr = (self.condition, self.compute_repr)
+        if 'custom_repr' in kwargs:
+            kwargs['custom_repr'] = (custom_repr, *kwargs['custom_repr'])
+        else:
+            kwargs['custom_repr'] = (custom_repr,)
+        super(TorchSnooper, self).__init__(*args, **kwargs)
         self.tensor_format = tensor_format
 
     @staticmethod
@@ -86,39 +90,56 @@ class TorchSnooper:
             return False
         return all([torch.is_tensor(i) for i in x])
 
+    def list_of_tensors_repr(self, x):
+        l = ''
+        for i in x:
+            if l != '':
+                l += ', '
+            l += self.tensor_format(i)
+        return '[' + l + ']'
+
     def is_tuple_of_tensors(self, x):
         if not isinstance(x, tuple):
             return False
         return all([torch.is_tensor(i) for i in x])
+
+    def tuple_of_tensors_repr(self, x):
+        l = ''
+        for i in x:
+            if l != '':
+                l += ', '
+            l += self.tensor_format(i)
+        return '(' + l + ')'
 
     def is_dict_of_tensors(self, x):
         if not isinstance(x, dict):
             return False
         return all([torch.is_tensor(i) for i in x.values()])
 
+    def dict_of_tensors_repr(self, x):
+        l = ''
+        for k, v in x.items():
+            if l != '':
+                l += ', '
+            l += repr(k) + ': ' + self.tensor_format(v)
+        return '{' + l + '}'
+
     def condition(self, x):
-        return torch.is_tensor(x) or self.is_return_types(x)
+        return torch.is_tensor(x) or self.is_return_types(x) or \
+            self.is_list_of_tensors(x) or self.is_tuple_of_tensors(x) or self.is_dict_of_tensors(x)
 
     def compute_repr(self, x):
         if torch.is_tensor(x):
             return self.tensor_format(x)
         elif self.is_return_types(x):
             return self.return_types_repr(x)
+        elif self.is_list_of_tensors(x):
+            return self.list_of_tensors_repr(x)
+        elif self.is_tuple_of_tensors(x):
+            return self.tuple_of_tensors_repr(x)
+        elif self.is_dict_of_tensors(x):
+            return self.dict_of_tensors_repr(x)
         raise RuntimeError('Control flow should not reach here, open a bug report!')
 
-    def __len__(self):
-        return 2
 
-    def __getitem__(self, i):
-        return (self.condition, self.compute_repr)[i]
-
-    def snoop(self, *args, **kwargs):
-        if 'custom_repr' in kwargs:
-            kwargs['custom_repr'] = (self, *kwargs['custom_repr'])
-        else:
-            kwargs['custom_repr'] = (self,)
-        return pysnooper.snoop(*args, **kwargs)
-
-
-def snoop(*args, **kwargs):
-    return TorchSnooper().snoop(*args, **kwargs)
+snoop = TorchSnooper
