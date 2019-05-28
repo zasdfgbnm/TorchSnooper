@@ -10,8 +10,8 @@ class TensorFormat:
         self.properties_name = property_name
 
     def __call__(self, tensor):
-        prefix = 'Tensor['
-        suffix = ']'
+        prefix = 'tensor('
+        suffix = ')'
         properties_str = ''
         for p in self.properties:
             new = ''
@@ -80,6 +80,21 @@ class TorchSnooper:
         if type(x).__name__ == 'gels':
             return 'gels(solution=' + self.tensor_format(x.solution) + ', QR=' + self.tensor_format(x.QR) + ')'
         warnings.warn('Unknown return_types encountered, open a bug report!')
+
+    def is_list_of_tensors(self, x):
+        if not isinstance(x, list):
+            return False
+        return all([torch.is_tensor(i) for i in x])
+
+    def is_tuple_of_tensors(self, x):
+        if not isinstance(x, tuple):
+            return False
+        return all([torch.is_tensor(i) for i in x])
+
+    def is_dict_of_tensors(self, x):
+        if not isinstance(x, dict):
+            return False
+        return all([torch.is_tensor(i) for i in x.values()])
 
     def condition(self, x):
         return torch.is_tensor(x) or self.is_return_types(x)
