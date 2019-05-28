@@ -163,3 +163,76 @@ def test_dict_of_tensors():
             ReturnValueEntry("{'key': tensor<(5, 8), float32, cpu>}"),
         )
     )
+
+
+def test_return_types():
+    string_io = io.StringIO()
+
+    @torchsnooper.snoop(string_io)
+    def my_function():
+        x = torch.eye(3)
+        y = x.max(dim=0)
+        y = x.min(dim=0)
+        y = x.median(dim=0)
+        y = x.mode(dim=0)
+        y = x.kthvalue(dim=0, k=1)
+        y = x.sort(dim=0)
+        y = x.topk(dim=0, k=1)
+        y = x.symeig(eigenvectors=True)
+        y = x.eig(eigenvectors=True)
+        y = x.qr()
+        y = x.geqrf()
+        y = x.solve(x)
+        y = x.slogdet()
+        y = x.gels(x)
+        y = x.triangular_solve(x)
+        y = x.svd()
+        return x
+
+    my_function()
+
+    output = string_io.getvalue()
+    print(output)
+    assert_output(
+        output,
+        (
+            CallEntry(),
+            LineEntry(),
+            VariableEntry('x', "tensor<(3, 3), float32, cpu>"),
+            LineEntry(),
+            VariableEntry('y', "max(values=tensor<(3,), float32, cpu>, indices=tensor<(3,), int64, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "min(values=tensor<(3,), float32, cpu>, indices=tensor<(3,), int64, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "median(values=tensor<(3,), float32, cpu>, indices=tensor<(3,), int64, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "mode(values=tensor<(3,), float32, cpu>, indices=tensor<(3,), int64, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "kthvalue(values=tensor<(3,), float32, cpu>, indices=tensor<(3,), int64, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "sort(values=tensor<(3, 3), float32, cpu>, indices=tensor<(3, 3), int64, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "topk(values=tensor<(1, 3), float32, cpu>, indices=tensor<(1, 3), int64, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "symeig(eigenvalues=tensor<(3,), float32, cpu>, eigenvectors=tensor<(3, 3), float32, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "eig(eigenvalues=tensor<(3, 2), float32, cpu>, eigenvectors=tensor<(3, 3), float32, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "qr(Q=tensor<(3, 3), float32, cpu>, R=tensor<(3, 3), float32, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "geqrf(a=tensor<(3, 3), float32, cpu>, tau=tensor<(3,), float32, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "solve(solution=tensor<(3, 3), float32, cpu>, LU=tensor<(3, 3), float32, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "slogdet(sign=tensor<(), float32, cpu>, logabsdet=tensor<(), float32, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "gels(solution=tensor<(3, 3), float32, cpu>, QR=tensor<(3, 3), float32, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "triangular_solve(solution=tensor<(3, 3), float32... cloned_coefficient=tensor<(3, 3), float32, cpu>)"),
+            LineEntry(),
+            VariableEntry('y', "svd(U=tensor<(3, 3), float32, cpu>, S=tensor<(3,), float32, cpu>, V=tensor<(3, 3), float32, cpu>)"),
+            LineEntry(),
+            ReturnEntry(),
+            ReturnValueEntry("tensor<(3, 3), float32, cpu>"),
+        )
+    )
