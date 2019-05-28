@@ -117,6 +117,8 @@ class TorchSnooper(pysnooper.tracer.Tracer):
             if l != '':
                 l += ', '
             l += self.tensor_format(i)
+        if len(x) == 1:
+            l += ','
         return '(' + l + ')'
 
     def is_dict_of_tensors(self, x):

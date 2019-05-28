@@ -79,3 +79,87 @@ def test_tensor_property_name():
             ReturnValueEntry('tensor<shape=(5, 8), dtype=float32, device=cpu, requires_grad=False>'),
         )
     )
+
+
+def test_tuple_of_tensors():
+    string_io = io.StringIO()
+
+    @torchsnooper.snoop(string_io)
+    def my_function():
+        x = (torch.randn((5, 8)),)
+        y = (torch.randn((5, 8)), torch.randn(()))
+        return x
+
+    my_function()
+
+    output = string_io.getvalue()
+    print(output)
+    assert_output(
+        output,
+        (
+            CallEntry(),
+            LineEntry(),
+            VariableEntry('x', '(tensor<(5, 8), float32, cpu>,)'),
+            LineEntry(),
+            VariableEntry('y', '(tensor<(5, 8), float32, cpu>, tensor<(), float32, cpu>)'),
+            LineEntry(),
+            ReturnEntry(),
+            ReturnValueEntry('(tensor<(5, 8), float32, cpu>,)'),
+        )
+    )
+
+
+
+def test_list_of_tensors():
+    string_io = io.StringIO()
+
+    @torchsnooper.snoop(string_io)
+    def my_function():
+        x = [torch.randn((5, 8))]
+        y = [torch.randn((5, 8)), torch.randn(())]
+        return x
+
+    my_function()
+
+    output = string_io.getvalue()
+    print(output)
+    assert_output(
+        output,
+        (
+            CallEntry(),
+            LineEntry(),
+            VariableEntry('x', '[tensor<(5, 8), float32, cpu>]'),
+            LineEntry(),
+            VariableEntry('y', '[tensor<(5, 8), float32, cpu>, tensor<(), float32, cpu>]'),
+            LineEntry(),
+            ReturnEntry(),
+            ReturnValueEntry('[tensor<(5, 8), float32, cpu>]'),
+        )
+    )
+
+def test_dict_of_tensors():
+    string_io = io.StringIO()
+
+    @torchsnooper.snoop(string_io)
+    def my_function():
+        x = {'key': torch.randn((5, 8))}
+        y = {'key': torch.randn((5, 8)), 'key2': torch.randn(())}
+        return x
+
+    my_function()
+
+    output = string_io.getvalue()
+    print(output)
+    assert_output(
+        output,
+        (
+            CallEntry(),
+            LineEntry(),
+            VariableEntry('x', "{'key': tensor<(5, 8), float32, cpu>}"),
+            LineEntry(),
+            VariableEntry('y', "{'key': tensor<(5, 8), float32, cpu>, 'key2': tensor<(), float32, cpu>}"),
+            LineEntry(),
+            ReturnEntry(),
+            ReturnValueEntry("{'key': tensor<(5, 8), float32, cpu>}"),
+        )
+    )
