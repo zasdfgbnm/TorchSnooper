@@ -47,7 +47,7 @@ The above code seems to be correct, but unfortunately, we are getting the follow
 RuntimeError: Expected object of backend CPU but got backend CUDA for argument #2 'mask'
 ```
 
-What is the problem? Let's snoop it! Decorate your function with `torchsnooper.snoop()`:
+What is the problem? Let's snoop it! Decorate our function with `torchsnooper.snoop()`:
 
 ```python
 import torch
@@ -64,7 +64,7 @@ source = torch.tensor([1.0, 2.0, 3.0], device='cuda')
 y = myfunc(mask, source)
 ```
 
-Run your script, and you will see:
+Run our script, and we will see:
 
 ```
 Starting var:.. mask = tensor<(6,), int64, cuda:0>
