@@ -105,7 +105,7 @@ Problem solved.
 
 # Example 2
 
-We are building a linear model to fit $y = x_1 + 2 * x_2 + 3$:
+We are building a linear model
 
 ```python
 class Model(torch.nn.Module):
@@ -117,3 +117,87 @@ class Model(torch.nn.Module):
     def forward(self, x):
         return self.layer(x)
 ```
+
+and we want to fit `y = x1 + 2 * x2 + 3`, so we create a dataset:
+
+```python
+x = torch.tensor([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])
+y = torch.tensor([3.0, 5.0, 4.0, 6.0])
+```
+
+We train our model on this dataset using SGD optimizer:
+
+```python
+model = Model()
+optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
+for _ in range(10):
+    optimizer.zero_grad()
+    pred = model(x)
+    squared_diff = (y - pred) ** 2
+    loss = squared_diff.mean()
+    print(loss.item())
+    loss.backward()
+    optimizer.step()
+```
+
+But unfortunately, the loss does not go down to a low enough number.
+
+What's wrong? Let's snoop it! Putting the training loop inside snoop:
+
+```python
+with torchsnooper.snoop():
+    for _ in range(100):
+        optimizer.zero_grad()
+        pred = model(x)
+        squared_diff = (y - pred) ** 2
+        loss = squared_diff.mean()
+        print(loss.item())
+        loss.backward()
+        optimizer.step()
+```
+
+Part of the trace looks like:
+
+```
+New var:....... x = tensor<(4, 2), float32, cpu>
+New var:....... y = tensor<(4,), float32, cpu>
+New var:....... model = Model(  (layer): Linear(in_features=2, out_features=1, bias=True))
+New var:....... optimizer = SGD (Parameter Group 0    dampening: 0    lr: 0....omentum: 0    nesterov: False    weight_decay: 0)
+22:27:01.024233 line        21     for _ in range(100):
+New var:....... _ = 0
+22:27:01.024439 line        22         optimizer.zero_grad()
+22:27:01.024574 line        23         pred = model(x)
+New var:....... pred = tensor<(4, 1), float32, cpu, grad>
+22:27:01.026442 line        24         squared_diff = (y - pred) ** 2
+New var:....... squared_diff = tensor<(4, 4), float32, cpu, grad>
+22:27:01.027369 line        25         loss = squared_diff.mean()
+New var:....... loss = tensor<(), float32, cpu, grad>
+22:27:01.027616 line        26         print(loss.item())
+22:27:01.027793 line        27         loss.backward()
+22:27:01.050189 line        28         optimizer.step()
+```
+
+We notice that, `y` has shape `(4,)`, but `pred` has shape `(4, 1)`. As a result, `squared_diff` has shape `(4, 4)` due to broadcasting!
+
+This is not the expected behavior, let's fix it: `pred = model(x).squeeze()`, now everything looks good:
+
+```
+New var:....... x = tensor<(4, 2), float32, cpu>
+New var:....... y = tensor<(4,), float32, cpu>
+New var:....... model = Model(  (layer): Linear(in_features=2, out_features=1, bias=True))
+New var:....... optimizer = SGD (Parameter Group 0    dampening: 0    lr: 0....omentum: 0    nesterov: False    weight_decay: 0)
+22:28:19.778089 line        21     for _ in range(100):
+New var:....... _ = 0
+22:28:19.778293 line        22         optimizer.zero_grad()
+22:28:19.778436 line        23         pred = model(x).squeeze()
+New var:....... pred = tensor<(4,), float32, cpu, grad>
+22:28:19.780250 line        24         squared_diff = (y - pred) ** 2
+New var:....... squared_diff = tensor<(4,), float32, cpu, grad>
+22:28:19.781099 line        25         loss = squared_diff.mean()
+New var:....... loss = tensor<(), float32, cpu, grad>
+22:28:19.781361 line        26         print(loss.item())
+22:28:19.781537 line        27         loss.backward()
+22:28:19.798983 line        28         optimizer.step()
+```
+
+And the final model converge to the desired values.
