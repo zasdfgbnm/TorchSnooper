@@ -15,10 +15,10 @@ setuptools.setup(
     install_requires=[
         'pysnooper',
     ],
-    extras_require={
-        'tests': {
-            'pytest',
-            'python-toolbox',
-        },
-    },
+    tests_require=[
+        'pytest',
+        'torch',
+        'python-toolbox',
+        'coverage',
+    ],
 )
