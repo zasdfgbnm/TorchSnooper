@@ -1,7 +1,11 @@
 # TorchSnooper
 
+Checks:
 [![Build Status](https://zasdfgbnm.visualstudio.com/TorchSnooper/_apis/build/status/flake8?branchName=master)](https://zasdfgbnm.visualstudio.com/TorchSnooper/_build/latest?definitionId=12&branchName=master)
 [![Build Status](https://zasdfgbnm.visualstudio.com/TorchSnooper/_apis/build/status/test?branchName=master)](https://zasdfgbnm.visualstudio.com/TorchSnooper/_build/latest?definitionId=13&branchName=master)
+
+Deploy (only succeed on tagged commits):
+[![Build Status](https://zasdfgbnm.visualstudio.com/TorchSnooper/_apis/build/status/deploy-pypi?branchName=master)](https://zasdfgbnm.visualstudio.com/TorchSnooper/_build/latest?definitionId=14&branchName=master)
 
 Are you having dtype or device errors like `RuntimeError: Expected object of scalar type Double but got scalar type Float`, and feeling it is troublesome to figure out where in you code the mistake starts?
 
