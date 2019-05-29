@@ -102,3 +102,18 @@ OK, the problem is that, we didn't make the `mask` in the input a byte tensor. C
 mask = torch.tensor([0, 1, 0, 1, 1, 0], device='cuda', dtype=torch.uint8)
 ```
 Problem solved.
+
+# Example 2
+
+We are building a linear model to fit $y = x_1 + 2 * x_2 + 3$:
+
+```python
+class Model(torch.nn.Module):
+
+    def __init__(self):
+        super().__init__()
+        self.layer = torch.nn.Linear(2, 1)
+
+    def forward(self, x):
+        return self.layer(x)
+```
