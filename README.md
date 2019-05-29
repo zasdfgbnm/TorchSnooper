@@ -13,7 +13,7 @@ Are you having dtype or device errors like `RuntimeError: Expected object of sca
 
 Are you getting output of unexpected shape, but you don't know where in your function went wrong?
 
-TorchSnooper is a PySnooper plugin that helps you debugging these errors.
+TorchSnooper is a [PySnooper](https://github.com/cool-RR/PySnooper) plugin that helps you debugging these errors.
 
 To use TorchSnooper, you just use it like using PySnooper. Remember to replace the `pysnooper.snoop` with `torchsnooper.snoop` in your code.
 
