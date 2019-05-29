@@ -29,5 +29,8 @@ steps:
 - script: 'pip install git+https://github.com/zasdfgbnm/PySnooper.git'
   displayName: 'Install dependencies'
 
+- script: 'pip install setuptools wheel'
+  displayName: 'Install dependencies'
+
 - script: 'python setup.py bdist bdist_wheel && twine upload -u $(pypi_username) -p $(pypi_password) dist/*'
   displayName: PYPI deploy
