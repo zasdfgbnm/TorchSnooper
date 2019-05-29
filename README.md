@@ -6,7 +6,7 @@ Are you getting output of unexpected shape, but you don't know where in your fun
 
 TorchSnooper is a PySnooper plugin that helps you debugging these errors.
 
-To use TorchSnooper, you just install it, and use it like using PySnooper, just replace the `pysnooper.snoop` with `torchsnooper.snoop` in your code.
+To use TorchSnooper, you just use it like using PySnooper. Remember to replace the `pysnooper.snoop` with `torchsnooper.snoop` in your code.
 
 This project is currently in a very early stage. To install, first install my temporary custom version of PySnooper:
 
