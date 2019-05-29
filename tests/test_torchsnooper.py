@@ -1,7 +1,7 @@
 import io
 import torch
 import torchsnooper
-from .utils import assert_output, VariableEntry, CallEntry, LineEntry, ReturnEntry, OpcodeEntry, ReturnValueEntry, ExceptionEntry
+from .utils import assert_output, VariableEntry, CallEntry, LineEntry, ReturnEntry, ReturnValueEntry
 
 
 def test_default_tensor():
@@ -87,7 +87,7 @@ def test_tuple_of_tensors():
     @torchsnooper.snoop(string_io)
     def my_function():
         x = (torch.randn((5, 8)),)
-        y = (torch.randn((5, 8)), torch.randn(()))
+        y = (torch.randn((5, 8)), torch.randn(()))  # noqa: F841
         return x
 
     my_function()
@@ -109,14 +109,13 @@ def test_tuple_of_tensors():
     )
 
 
-
 def test_list_of_tensors():
     string_io = io.StringIO()
 
     @torchsnooper.snoop(string_io)
     def my_function():
         x = [torch.randn((5, 8))]
-        y = [torch.randn((5, 8)), torch.randn(())]
+        y = [torch.randn((5, 8)), torch.randn(())]  # noqa: F841
         return x
 
     my_function()
@@ -137,13 +136,14 @@ def test_list_of_tensors():
         )
     )
 
+
 def test_dict_of_tensors():
     string_io = io.StringIO()
 
     @torchsnooper.snoop(string_io)
     def my_function():
         x = {'key': torch.randn((5, 8))}
-        y = {'key': torch.randn((5, 8)), 'key2': torch.randn(())}
+        y = {'key': torch.randn((5, 8)), 'key2': torch.randn(())}  # noqa: F841
         return x
 
     my_function()
@@ -186,7 +186,7 @@ def test_return_types():
         y = x.slogdet()
         y = x.gels(x)
         y = x.triangular_solve(x)
-        y = x.svd()
+        y = x.svd()  # noqa: F841
         return x
 
     my_function()

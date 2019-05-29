@@ -99,12 +99,12 @@ class TorchSnooper(pysnooper.tracer.Tracer):
         return all([torch.is_tensor(i) for i in x])
 
     def list_of_tensors_repr(self, x):
-        l = ''
+        content = ''
         for i in x:
-            if l != '':
-                l += ', '
-            l += self.tensor_format(i)
-        return '[' + l + ']'
+            if content != '':
+                content += ', '
+            content += self.tensor_format(i)
+        return '[' + content + ']'
 
     def is_tuple_of_tensors(self, x):
         if not isinstance(x, tuple):
@@ -112,14 +112,14 @@ class TorchSnooper(pysnooper.tracer.Tracer):
         return all([torch.is_tensor(i) for i in x])
 
     def tuple_of_tensors_repr(self, x):
-        l = ''
+        content = ''
         for i in x:
-            if l != '':
-                l += ', '
-            l += self.tensor_format(i)
+            if content != '':
+                content += ', '
+            content += self.tensor_format(i)
         if len(x) == 1:
-            l += ','
-        return '(' + l + ')'
+            content += ','
+        return '(' + content + ')'
 
     def is_dict_of_tensors(self, x):
         if not isinstance(x, dict):
@@ -127,12 +127,12 @@ class TorchSnooper(pysnooper.tracer.Tracer):
         return all([torch.is_tensor(i) for i in x.values()])
 
     def dict_of_tensors_repr(self, x):
-        l = ''
+        content = ''
         for k, v in x.items():
-            if l != '':
-                l += ', '
-            l += repr(k) + ': ' + self.tensor_format(v)
-        return '{' + l + '}'
+            if content != '':
+                content += ', '
+            content += repr(k) + ': ' + self.tensor_format(v)
+        return '{' + content + '}'
 
     def condition(self, x):
         return torch.is_tensor(x) or self.is_return_types(x) or \
