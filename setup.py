@@ -13,7 +13,7 @@ setuptools.setup(
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
     install_requires=[
-        'pysnooper',
+        'pysnooper>=0.1.0',
     ],
     tests_require=[
         'pytest',

@@ -21,8 +21,5 @@ steps:
 - script: 'pip install --upgrade pip'
   displayName: 'Upgrade pip'
 
-- script: 'pip install git+https://github.com/zasdfgbnm/PySnooper.git'
-  displayName: 'Install dependencies'
-
-- script: 'pip install flake8 && flake8 .'
+- script: 'pip install flake8 && pip install . && flake8 .'
   displayName: Flake8

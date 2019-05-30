@@ -9,23 +9,15 @@ Deploy (only succeed on tagged commits):
 
 [![Build Status](https://zasdfgbnm.visualstudio.com/TorchSnooper/_apis/build/status/deploy-pypi?branchName=master)](https://zasdfgbnm.visualstudio.com/TorchSnooper/_build/latest?definitionId=14&branchName=master)
 
-Are you having dtype or device errors like `RuntimeError: Expected object of scalar type Double but got scalar type Float`, and feeling it is troublesome to figure out where in you code the mistake starts?
+Do you want to look at the shape/dtype/etc. of every step of you model, but tired of manually writing prints?
 
-Are you getting output of unexpected shape, but you don't know where in your function went wrong?
+Are you bothered by errors like `RuntimeError: Expected object of scalar type Double but got scalar type Float`, and want to quickly figure out the problem?
 
-TorchSnooper is a [PySnooper](https://github.com/cool-RR/PySnooper) plugin that helps you debugging these errors.
+TorchSnooper is a [PySnooper](https://github.com/cool-RR/PySnooper) extension that helps you debugging these errors.
 
 To use TorchSnooper, you just use it like using PySnooper. Remember to replace the `pysnooper.snoop` with `torchsnooper.snoop` in your code.
 
-This project is currently in a very early stage. To install, first install my temporary custom version of PySnooper:
-
-```
-pip install --upgrade git+https://github.com/zasdfgbnm/PySnooper.git
-```
-
-This temporary fork is mainly to be able to use `custom_repr` before https://github.com/cool-RR/PySnooper/pull/126 get approved and merged.
-
-After installing the custom PySnooper, the next step would be to install TorchSnooper.
+To install:
 
 ```
 pip install torchsnooper
