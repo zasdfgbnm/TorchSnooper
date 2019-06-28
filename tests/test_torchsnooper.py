@@ -165,6 +165,28 @@ def test_dict_of_tensors():
     )
 
 
+def test_recursive_containers():
+    string_io = io.StringIO()
+
+    @torchsnooper.snoop(string_io)
+    def my_function():
+        return [{'key': torch.zeros(5, 6, 7)}]
+
+    my_function()
+
+    output = string_io.getvalue()
+    print(output)
+    assert_output(
+        output,
+        (
+            CallEntry(),
+            LineEntry(),
+            ReturnEntry(),
+            ReturnValueEntry("[{'key': tensor<(5, 6, 7), float32, cpu>}]"),
+        )
+    )
+
+
 def test_return_types():
     string_io = io.StringIO()
 
