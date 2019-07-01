@@ -1,0 +1,30 @@
+queue:
+  name: Hosted Ubuntu 1604
+  timeoutInMinutes: 6000
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+
+pr: none
+
+variables:
+  python.version: '3.7'
+
+steps:
+
+- task: UsePythonVersion@0
+  displayName: 'Use Python $(python.version)'
+  inputs:
+    versionSpec: '$(python.version)'
+
+- script: 'pip install --upgrade pip'
+  displayName: 'Upgrade pip'
+
+- script: 'pip install setuptools wheel twine'
+  displayName: 'Install dependencies'
+
+- script: 'python setup.py bdist bdist_wheel && twine upload -u $(pypi_username) -p $(pypi_password) dist/*'
+  displayName: PYPI deploy
