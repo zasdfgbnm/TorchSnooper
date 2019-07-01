@@ -14,6 +14,7 @@ setuptools.setup(
     setup_requires=['setuptools_scm'],
     install_requires=[
         'pysnooper>=0.1.0',
+        'numpy',
     ],
     tests_require=[
         'pytest',

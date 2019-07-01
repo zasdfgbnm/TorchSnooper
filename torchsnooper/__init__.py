@@ -2,6 +2,7 @@ import torch
 import pysnooper
 import pysnooper.utils
 import warnings
+import numpy
 from pkg_resources import get_distribution, DistributionNotFound
 
 
@@ -58,14 +59,24 @@ class TensorFormat:
 default_format = TensorFormat()
 
 
+class NumpyFormat:
+
+    def __call__(self, x):
+        return f'ndarray<{x.shape}, {x.dtype.name}>'
+
+
+default_numpy_format = NumpyFormat()
+
+
 class TorchSnooper(pysnooper.tracer.Tracer):
 
-    def __init__(self, *args, tensor_format=default_format, **kwargs):
+    def __init__(self, *args, tensor_format=default_format, numpy_format=default_numpy_format, **kwargs):
         self.orig_custom_repr = kwargs['custom_repr'] if 'custom_repr' in kwargs else ()
         custom_repr = (lambda x: True, self.compute_repr)
         kwargs['custom_repr'] = (custom_repr,)
         super(TorchSnooper, self).__init__(*args, **kwargs)
         self.tensor_format = tensor_format
+        self.numpy_format = numpy_format
 
     @staticmethod
     def is_return_types(x):
@@ -96,6 +107,8 @@ class TorchSnooper(pysnooper.tracer.Tracer):
         orig_repr_func = pysnooper.utils.get_repr_function(x, self.orig_custom_repr)
         if torch.is_tensor(x):
             return self.tensor_format(x)
+        elif isinstance(x, numpy.ndarray):
+            return self.numpy_format(x)
         elif self.is_return_types(x):
             return self.return_types_repr(x)
         elif orig_repr_func is not repr:

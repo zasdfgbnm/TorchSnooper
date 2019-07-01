@@ -1,5 +1,6 @@
 import io
 import torch
+import numpy
 import torchsnooper
 from .utils import assert_output, VariableEntry, CallEntry, LineEntry, ReturnEntry, ReturnValueEntry
 
@@ -256,5 +257,28 @@ def test_return_types():
             LineEntry(),
             ReturnEntry(),
             ReturnValueEntry("tensor<(3, 3), float32, cpu>"),
+        )
+    )
+
+
+def test_numpy_ndarray():
+    string_io = io.StringIO()
+
+    @torchsnooper.snoop(string_io)
+    def my_function(x):
+        return x
+
+    a = numpy.random.randn(5, 6, 7)
+    my_function([a, a])
+
+    output = string_io.getvalue()
+    print(output)
+    assert_output(
+        output,
+        (
+            CallEntry(),
+            LineEntry(),
+            ReturnEntry(),
+            ReturnValueEntry("[ndarray<(5, 6, 7), float64>, ndarray<(5, 6, 7), float64>]"),
         )
     )
