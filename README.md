@@ -1,5 +1,10 @@
 # TorchSnooper
 
+Status:
+
+![PyPI](https://img.shields.io/pypi/v/TorchSnooper.svg)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/TorchSnooper.svg)
+
 Checks:
 
 [![Build Status](https://zasdfgbnm.visualstudio.com/TorchSnooper/_apis/build/status/flake8?branchName=master)](https://zasdfgbnm.visualstudio.com/TorchSnooper/_build/latest?definitionId=12&branchName=master)
