@@ -15,7 +15,7 @@ except DistributionNotFound:
 
 class TensorFormat:
 
-    def __init__(self, property_name=False, properties=('shape', 'dtype', 'device', 'requires_grad')):
+    def __init__(self, property_name=False, properties=('shape', 'dtype', 'device', 'requires_grad', 'has_nan', 'has_inf')):
         self.properties = properties
         self.properties_name = property_name
 
@@ -46,6 +46,22 @@ class TensorFormat:
                 else:
                     if tensor.requires_grad:
                         new += 'grad'
+            elif p == 'has_nan':
+                result = bool(torch.isnan(tensor).any())
+                if self.properties_name:
+                    new += 'has_nan='
+                    new += str(result)
+                else:
+                    if result:
+                        new += 'has_nan'
+            elif p == 'has_inf':
+                result = bool(torch.isinf(tensor).any())
+                if self.properties_name:
+                    new += 'has_inf='
+                    new += str(result)
+                else:
+                    if result:
+                        new += 'has_inf'
             else:
                 raise ValueError('Unknown tensor property')
 

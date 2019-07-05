@@ -1,4 +1,5 @@
 import io
+import math
 import torch
 import numpy
 import torchsnooper
@@ -280,5 +281,36 @@ def test_numpy_ndarray():
             LineEntry(),
             ReturnEntry(),
             ReturnValueEntry("[ndarray<(5, 6, 7), float64>, ndarray<(5, 6, 7), float64>]"),
+        )
+    )
+
+
+def test_nan_and_inf():
+    string_io = io.StringIO()
+
+    @torchsnooper.snoop(string_io)
+    def my_function():
+        x = torch.tensor(math.inf)  # noqa: F841
+        y = torch.tensor(math.nan)  # noqa: F841
+        z = torch.tensor(1.0)  # noqa: F841
+        t = torch.tensor([1.0, math.nan, math.inf])  # noqa: F841
+
+    my_function()
+
+    output = string_io.getvalue()
+    print(output)
+    assert_output(
+        output,
+        (
+            CallEntry(),
+            LineEntry(),
+            VariableEntry('x', "tensor<(), float32, cpu, has_inf>"),
+            LineEntry(),
+            VariableEntry('y', "tensor<(), float32, cpu, has_nan>"),
+            LineEntry(),
+            VariableEntry('z', "tensor<(), float32, cpu>"),
+            LineEntry(),
+            VariableEntry('t', "tensor<(3,), float32, cpu, has_nan, has_inf>"),
+            ReturnEntry(),
         )
     )
