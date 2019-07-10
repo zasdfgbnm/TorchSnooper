@@ -151,3 +151,25 @@ class TorchSnooper(pysnooper.tracer.Tracer):
 
 
 snoop = TorchSnooper
+
+
+def register_snoop(verbose=False, tensor_format=default_format, numpy_format=default_numpy_format):
+    import snoop
+    if verbose:
+        snoop.config.watch_extras += (
+            lambda source, value: ('{}.device'.format(source), value.device),
+            lambda source, value: ('{}.requires_grad'.format(source), value.requires_grad),
+            lambda source, value: ('{}.has_nan'.format(source), bool(torch.isnan(value).any())),
+            lambda source, value: ('{}.has_inf'.format(source), bool(torch.isinf(value).any())),
+        )
+    else:
+        import cheap_repr
+        import snoop.configuration
+        cheap_repr.register_repr(torch.Tensor)(lambda x, _: tensor_format(x))
+        cheap_repr.register_repr(numpy.ndarray)(lambda x, _: numpy_format(x))
+        cheap_repr.cheap_repr(torch.zeros(6))
+        unwanted = {
+            snoop.configuration.len_shape_watch,
+            snoop.configuration.dtype_watch,
+        }
+        snoop.config.watch_extras = tuple(x for x in snoop.config.watch_extras if x not in unwanted)

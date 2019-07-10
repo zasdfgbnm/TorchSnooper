@@ -29,6 +29,16 @@ To install:
 pip install torchsnooper
 ```
 
+TorchSnooper also support [snoop](https://github.com/alexmojaki/snoop). To use TorchSnooper with snoop, simply execute:
+```python
+torchsnooper.register_snoop()
+```
+or
+```python
+torchsnooper.register_snoop(verbose=True)
+```
+at the beginning, and use snoop normally.
+
 # Example 1: Monitoring device and dtype
 
 We're writing a simple function:

@@ -27,5 +27,6 @@ setuptools.setup(
         'torch',
         'python-toolbox',
         'coverage',
+        'snoop',
     ],
 )
