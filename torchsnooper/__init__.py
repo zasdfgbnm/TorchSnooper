@@ -6,6 +6,12 @@ import numpy
 from pkg_resources import get_distribution, DistributionNotFound
 
 
+FLOATING_POINTS = set()
+for i in ['float', 'double', 'half', 'complex128', 'complex32', 'complex64']:
+    if hasattr(torch, i):  # older version of PyTorch do not have complex dtypes
+        FLOATING_POINTS.add(getattr(torch, i))
+
+
 try:
     __version__ = get_distribution(__name__).version
 except DistributionNotFound:
@@ -47,7 +53,7 @@ class TensorFormat:
                     if tensor.requires_grad:
                         new += 'grad'
             elif p == 'has_nan':
-                result = bool(torch.isnan(tensor).any())
+                result = tensor.dtype in FLOATING_POINTS and bool(torch.isnan(tensor).any())
                 if self.properties_name:
                     new += 'has_nan='
                     new += str(result)
@@ -55,7 +61,7 @@ class TensorFormat:
                     if result:
                         new += 'has_nan'
             elif p == 'has_inf':
-                result = bool(torch.isinf(tensor).any())
+                result = tensor.dtype in FLOATING_POINTS and bool(torch.isinf(tensor).any())
                 if self.properties_name:
                     new += 'has_inf='
                     new += str(result)

@@ -314,3 +314,25 @@ def test_nan_and_inf():
             ReturnEntry(),
         )
     )
+
+
+def test_bool_tensor():
+    string_io = io.StringIO()
+
+    @torchsnooper.snoop(string_io)
+    def my_function():
+        x = torch.zeros(5, 5, dtype=torch.bool)  # noqa: F841
+
+    my_function()
+
+    output = string_io.getvalue()
+    print(output)
+    assert_output(
+        output,
+        (
+            CallEntry(),
+            LineEntry(),
+            VariableEntry('x', "tensor<(), bool, cpu>"),
+            ReturnEntry(),
+        )
+    )
