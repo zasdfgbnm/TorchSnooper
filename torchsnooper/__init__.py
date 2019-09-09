@@ -84,7 +84,7 @@ default_format = TensorFormat()
 class NumpyFormat:
 
     def __call__(self, x):
-        return f'ndarray<{x.shape}, {x.dtype.name}>'
+        return 'ndarray<{}, {}>'.format(x.shape, x.dtype.name)
 
 
 default_numpy_format = NumpyFormat()
