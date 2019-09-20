@@ -7,8 +7,6 @@ Status:
 
 Checks:
 
-[![Build Status](https://zasdfgbnm.visualstudio.com/TorchSnooper/_apis/build/status/flake8?branchName=master)](https://zasdfgbnm.visualstudio.com/TorchSnooper/_build/latest?definitionId=12&branchName=master)
-[![Build Status](https://zasdfgbnm.visualstudio.com/TorchSnooper/_apis/build/status/test?branchName=master)](https://zasdfgbnm.visualstudio.com/TorchSnooper/_build/latest?definitionId=13&branchName=master)
 [![Build Status](https://zasdfgbnm.visualstudio.com/TorchSnooper/_apis/build/status/deploy-test-pypi?branchName=master)](https://zasdfgbnm.visualstudio.com/TorchSnooper/_build/latest?definitionId=19&branchName=master)
 
 Deploy (only succeed on tagged commits):
