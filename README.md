@@ -4,14 +4,12 @@ Status:
 
 ![PyPI](https://img.shields.io/pypi/v/TorchSnooper.svg)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/TorchSnooper.svg)
+[![Actions Status](https://github.com/zasdfgbnm/TorchSnooper/workflows/tests/badge.svg)](https://github.com/zasdfgbnm/TorchSnooper/actions)
+[![Actions Status](https://github.com/zasdfgbnm/TorchSnooper/workflows/deploy-test-pypi/badge.svg)](https://github.com/zasdfgbnm/TorchSnooper/actions)
 
-Checks:
+Deploy (only run on release):
 
-[![Build Status](https://zasdfgbnm.visualstudio.com/TorchSnooper/_apis/build/status/deploy-test-pypi?branchName=master)](https://zasdfgbnm.visualstudio.com/TorchSnooper/_build/latest?definitionId=19&branchName=master)
-
-Deploy (only succeed on tagged commits):
-
-[![Build Status](https://zasdfgbnm.visualstudio.com/TorchSnooper/_apis/build/status/deploy-pypi?branchName=master)](https://zasdfgbnm.visualstudio.com/TorchSnooper/_build/latest?definitionId=14&branchName=master)
+[![Actions Status](https://github.com/zasdfgbnm/TorchSnooper/workflows/deploy-pypi/badge.svg)](https://github.com/zasdfgbnm/TorchSnooper/actions)
 
 Do you want to look at the shape/dtype/etc. of every step of you model, but tired of manually writing prints?
 
