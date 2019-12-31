@@ -116,6 +116,40 @@ mask = torch.tensor([0, 1, 0, 1, 1, 0], device='cuda', dtype=torch.uint8)
 ```
 Problem solved.
 
+# Example 1.5: Using Snoop instead of PySnooper
+
+We could also choose to use [snoop](https://github.com/alexmojaki/snoop) instead of [PySnooper](https://github.com/cool-RR/PySnooper).
+
+Remember to install `snoop` manually since it is not a dependency of TorchSnooper:
+
+```
+pip install snoop
+```
+
+The code in example 1 using snoop looks like:
+
+```python
+import torch
+import torchsnooper
+import snoop
+
+torchsnooper.register_snoop()
+
+@snoop
+def myfunc(mask, x):
+    y = torch.zeros(6)
+    y.masked_scatter_(mask, x)
+    return y
+
+mask = torch.tensor([0, 1, 0, 1, 1, 0], device='cuda')
+source = torch.tensor([1.0, 2.0, 3.0], device='cuda')
+y = myfunc(mask, source)
+```
+
+and the screenshot looks like:
+
+![snoop](snoop.png)
+
 # Example 2: Monitoring shape
 
 We are building a linear model
