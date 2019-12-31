@@ -25,49 +25,61 @@ class TensorFormat:
         self.properties = properties
         self.properties_name = property_name
 
+    def repr_shape(self, tensor):
+        ret = ''
+        if not hasattr(tensor, 'names') or not tensor.has_names():
+            ret += str(tuple(tensor.shape))
+        else:
+            ret += '('
+            for n, v in zip(tensor.names, tensor.shape):
+                if n is not None:
+                    ret += '{}={}, '.format(n, v)
+                else:
+                    ret += '{}, '.format(v)
+            ret = ret[:-2] + ')'
+        return ret
+
+    def repr_dtype(self, tensor):
+        dtype_str = str(tensor.dtype)
+        dtype_str = dtype_str[len('torch.'):]
+        return dtype_str
+
+    def repr_device(self, tensor):
+        return str(tensor.device)
+
+    def repr_requires_grad(self, tensor):
+        if self.properties_name:
+            return str(tensor.requires_grad)
+        if tensor.requires_grad:
+            return 'grad'
+        return ''
+
+    def repr_has_nan(self, tensor):
+        result = tensor.dtype in FLOATING_POINTS and bool(torch.isnan(tensor).any())
+        if self.properties_name:
+            return str(result)
+        if result:
+            return 'has_nan'
+        return ''
+
+    def repr_has_inf(self, tensor):
+        result = tensor.dtype in FLOATING_POINTS and bool(torch.isinf(tensor).any())
+        if self.properties_name:
+            return str(result)
+        if result:
+            return 'has_inf'
+        return ''
+
     def __call__(self, tensor):
         prefix = 'tensor<'
         suffix = '>'
         properties_str = ''
         for p in self.properties:
             new = ''
-            if p == 'shape':
-                if self.properties_name:
-                    new += 'shape='
-                new += str(tuple(tensor.shape))
-            elif p == 'dtype':
-                dtype_str = str(tensor.dtype)
-                dtype_str = dtype_str[len('torch.'):]
-                if self.properties_name:
-                    new += 'dtype='
-                new += dtype_str
-            elif p == 'device':
-                if self.properties_name:
-                    new += 'device='
-                new += str(tensor.device)
-            elif p == 'requires_grad':
-                if self.properties_name:
-                    new += 'requires_grad='
-                    new += str(tensor.requires_grad)
-                else:
-                    if tensor.requires_grad:
-                        new += 'grad'
-            elif p == 'has_nan':
-                result = tensor.dtype in FLOATING_POINTS and bool(torch.isnan(tensor).any())
-                if self.properties_name:
-                    new += 'has_nan='
-                    new += str(result)
-                else:
-                    if result:
-                        new += 'has_nan'
-            elif p == 'has_inf':
-                result = tensor.dtype in FLOATING_POINTS and bool(torch.isinf(tensor).any())
-                if self.properties_name:
-                    new += 'has_inf='
-                    new += str(result)
-                else:
-                    if result:
-                        new += 'has_inf'
+            if self.properties_name:
+                new += p + '='
+            if hasattr(self, 'repr_' + p):
+                new += getattr(self, 'repr_' + p)(tensor)
             else:
                 raise ValueError('Unknown tensor property')
 
@@ -129,13 +141,13 @@ class TorchSnooper(pysnooper.tracer.Tracer):
         orig_repr_func = pysnooper.utils.get_repr_function(x, self.orig_custom_repr)
         if torch.is_tensor(x):
             return self.tensor_format(x)
-        elif isinstance(x, numpy.ndarray):
+        if isinstance(x, numpy.ndarray):
             return self.numpy_format(x)
-        elif self.is_return_types(x):
+        if self.is_return_types(x):
             return self.return_types_repr(x)
-        elif orig_repr_func is not repr:
+        if orig_repr_func is not repr:
             return orig_repr_func(x)
-        elif isinstance(x, (list, tuple)):
+        if isinstance(x, (list, tuple)):
             content = ''
             for i in x:
                 if content != '':
@@ -146,7 +158,7 @@ class TorchSnooper(pysnooper.tracer.Tracer):
             if isinstance(x, tuple):
                 return '(' + content + ')'
             return '[' + content + ']'
-        elif isinstance(x, dict):
+        if isinstance(x, dict):
             content = ''
             for k, v in x.items():
                 if content != '':

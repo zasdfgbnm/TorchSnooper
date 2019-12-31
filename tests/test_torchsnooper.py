@@ -31,6 +31,31 @@ def test_default_tensor():
     )
 
 
+def test_named_tensor():
+    string_io = io.StringIO()
+
+    @torchsnooper.snoop(string_io)
+    def my_function():
+        x = torch.randn((5, 8), names=('A', 'B'), requires_grad=True)
+        return x
+
+    my_function()
+
+    output = string_io.getvalue()
+    print(output)
+    assert_output(
+        output,
+        (
+            CallEntry(),
+            LineEntry(),
+            VariableEntry('x', 'tensor<(A=5, B=8), float32, cpu, grad>'),
+            LineEntry(),
+            ReturnEntry(),
+            ReturnValueEntry('tensor<(A=5, B=8), float32, cpu, grad>'),
+        )
+    )
+
+
 def test_tensor_property_selector():
     string_io = io.StringIO()
     fmt = torchsnooper.TensorFormat(properties=('shape', 'device', 'requires_grad'))
