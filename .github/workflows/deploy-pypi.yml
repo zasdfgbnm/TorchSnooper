@@ -28,5 +28,5 @@ jobs:
     - name: Deploy
       run: |
         rm -rf dist/*
-        python setup.py bdist bdist_wheel
+        python setup.py sdist bdist_wheel
         twine upload -u zasdfgbnm-bot -p ${{secrets.zasdfgbnm_bot_pypi_password}} dist/*

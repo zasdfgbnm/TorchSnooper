@@ -31,5 +31,5 @@ jobs:
       run: |
         rm -rf dist/*
         git tag $(date +'v%Y.%m.%d.%H.%M.%S')
-        python setup.py bdist bdist_wheel
+        python setup.py sdist bdist_wheel
         twine upload --repository-url https://test.pypi.org/legacy/ -u zasdfgbnm-bot -p ${{secrets.zasdfgbnm_bot_test_pypi_password}} dist/*
